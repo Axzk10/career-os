@@ -8,11 +8,11 @@ export default function DashboardHeader() {
           fontWeight: 700,
         }}
       >
-        Job Search OS
+        CareerOS
       </p>
 
       <h1 style={{ margin: "6px 0", fontSize: 36 }}>
-        Job Tracker
+        CareerOS
       </h1>
 
       <p style={{ color: "var(--muted)", margin: 0 }}>
