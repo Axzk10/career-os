@@ -10,4 +10,5 @@ export type Job = {
   applicationDate: string;
   followUpDate: string | null;
   updatedAt: string;
+  cvPath: string | null;
 };

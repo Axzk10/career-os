@@ -31,3 +31,10 @@ model Job {
   updatedAt       DateTime @updatedAt
 
 }
+
+model Resume {
+  id        String   @id @default(cuid())
+  name      String
+  filePath  String
+  createdAt DateTime @default(now())
+}
