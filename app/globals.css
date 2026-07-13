@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #111111;
+  --surface: #1a1a1a;
+  --surface-light: #232323;
+  --card: #ffffff;
+
+  --purple: #8a588d;
+  --purple-dark: #5b3c5c;
+  --purple-light: #c3a0c7;
+
+  --yellow: #ffdc2b;
+
+  --text: #f5f5f5;
+  --text-dark: #111111;
+  --muted: #a1a1aa;
+
+  --border: #3a3a3a;
+  --border-light: #e5e5e5;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+
+  --shadow-card: 0 12px 30px rgba(138, 88, 141, 0.18);
+  --shadow-card-hover: 0 18px 40px rgba(138, 88, 141, 0.28);
+
+  --transition-fast: 0.18s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px 12px;
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(138, 88, 141, 0.2);
+}
+
+button {
+  background: var(--yellow);
+  color: #111111;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(0.95);
+}
