@@ -10,14 +10,15 @@ export default function AppShell({ children }: AppShellProps) {
     <>
       <Sidebar />
 
-      <div
+      <main
         style={{
           marginLeft: 240,
+          padding: 32,
           minHeight: "100vh",
         }}
       >
         {children}
-      </div>
+      </main>
     </>
   );
 }

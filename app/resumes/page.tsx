@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
 
 type Resume = {
   id: string;
@@ -135,12 +138,8 @@ export default function ResumesPage() {
         </p>
       </header>
 
-      <section
+      <Card
         style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius-lg)",
-          padding: 20,
           marginBottom: 24,
         }}
       >
@@ -149,15 +148,14 @@ export default function ResumesPage() {
         <form
           onSubmit={addResume}
           style={{
-            display: "flex",
-            gap: 10,
-            flexWrap: "wrap",
-            alignItems: "center",
+            display: "grid",
+            gap: 18,
+            maxWidth: 520,
           }}
         >
-          <input
-            type="text"
-            placeholder="Resume name"
+          <Input
+            id="resume-name"
+            label="Resume name"
             value={name}
             onChange={(event) => {
               setName(event.target.value);
@@ -166,91 +164,98 @@ export default function ResumesPage() {
                 setError("");
               }
             }}
+            placeholder="Software Engineer Resume"
+            required
           />
 
-          <input
-            ref={fileInputRef}
-            id="resume-file"
-            type="file"
-            accept="application/pdf,.pdf"
-            onChange={(event) => {
-              setFile(event.target.files?.[0] ?? null);
-
-              if (error) {
-                setError("");
-              }
+          <label
+            htmlFor="resume-file"
+            style={{
+              display: "grid",
+              gap: 8,
             }}
-          />
+          >
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "var(--text)",
+              }}
+            >
+              PDF file
+            </span>
 
-          <button
+            <input
+              ref={fileInputRef}
+              id="resume-file"
+              type="file"
+              accept="application/pdf,.pdf"
+              onChange={(event) => {
+                setFile(event.target.files?.[0] ?? null);
+
+                if (error) {
+                  setError("");
+                }
+              }}
+            />
+          </label>
+
+          {file && (
+            <p
+              style={{
+                margin: 0,
+                color: "var(--muted)",
+                fontSize: 14,
+              }}
+            >
+              Selected file: {file.name}
+            </p>
+          )}
+
+          {error && (
+            <p
+              role="alert"
+              style={{
+                margin: 0,
+                color: "#fca5a5",
+                fontSize: 14,
+              }}
+            >
+              {error}
+            </p>
+          )}
+
+          <Button
             type="submit"
             disabled={isUploading}
             style={{
-              opacity: isUploading ? 0.7 : 1,
-              cursor: isUploading ? "not-allowed" : "pointer",
+              width: "fit-content",
             }}
           >
-            {isUploading ? "Uploading..." : "+ Upload Resume"}
-          </button>
+            {isUploading ? "Uploading..." : "Upload Resume"}
+          </Button>
         </form>
-
-        {file && (
-          <p
-            style={{
-              marginBottom: 0,
-              color: "var(--muted)",
-              fontSize: 14,
-            }}
-          >
-            Selected file: {file.name}
-          </p>
-        )}
-
-        {error && (
-          <p
-            role="alert"
-            style={{
-              marginBottom: 0,
-              color: "#fca5a5",
-              fontSize: 14,
-            }}
-          >
-            {error}
-          </p>
-        )}
-      </section>
+      </Card>
 
       <section
         style={{
           display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fill, minmax(260px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
           gap: 16,
         }}
       >
         {resumes.length === 0 ? (
-          <div
+          <Card
             style={{
-              padding: 24,
-              background: "var(--surface)",
-              border: "1px dashed var(--border)",
-              borderRadius: "var(--radius-lg)",
+              borderStyle: "dashed",
               color: "var(--muted)",
             }}
           >
             No resumes saved yet.
-          </div>
+          </Card>
         ) : (
           resumes.map((resume) => (
-            <article
-              key={resume.id}
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-lg)",
-                padding: 18,
-              }}
-            >
+            <Card key={resume.id}>
               <div
                 style={{
                   fontSize: 28,
@@ -289,12 +294,9 @@ export default function ResumesPage() {
                   color: "var(--muted)",
                 }}
               >
-                Added{" "}
-                {new Date(
-                  resume.createdAt
-                ).toLocaleDateString()}
+                Added {new Date(resume.createdAt).toLocaleDateString()}
               </small>
-            </article>
+            </Card>
           ))
         )}
       </section>
