@@ -9,6 +9,7 @@ import {
   Trophy,
 } from "lucide-react";
 import Card from "../components/ui/Card";
+import StatusChart from "../components/charts/StatusChart";
 
 type Job = {
   id: string;
@@ -108,10 +109,10 @@ export default function AnalyticsPage() {
       (first, second) => second[1] - first[1]
     );
 
-    const largestStatusCount = Math.max(
-      ...statusEntries.map(([, count]) => count),
-      1
-    );
+    const statusChartData = statusEntries.map(([status, count]) => ({
+      status: formatStatus(status),
+      count,
+    }));
 
     return {
       applicationsThisWeek,
@@ -120,8 +121,7 @@ export default function AnalyticsPage() {
       overdueFollowUps,
       highPriority,
       responseRate,
-      statusEntries,
-      largestStatusCount,
+      statusChartData,
     };
   }, [jobs]);
 
@@ -136,10 +136,10 @@ export default function AnalyticsPage() {
   return (
     <main
       style={{
-        padding: 32,
         width: "100%",
         maxWidth: 1200,
         margin: "0 auto",
+        padding: 32,
       }}
     >
       <header
@@ -357,68 +357,7 @@ export default function AnalyticsPage() {
           See where your applications currently sit in the hiring pipeline.
         </p>
 
-        {analytics.statusEntries.length === 0 ? (
-          <p
-            style={{
-              margin: 0,
-              color: "var(--muted)",
-            }}
-          >
-            Add an application to start seeing analytics.
-          </p>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gap: 18,
-            }}
-          >
-            {analytics.statusEntries.map(([status, count]) => {
-              const width =
-                (count / analytics.largestStatusCount) * 100;
-
-              return (
-                <div key={status}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      gap: 16,
-                      marginBottom: 8,
-                    }}
-                  >
-                    <span style={{ fontWeight: 600 }}>
-                      {formatStatus(status)}
-                    </span>
-
-                    <span style={{ color: "var(--muted)" }}>
-                      {count}
-                    </span>
-                  </div>
-
-                  <div
-                    style={{
-                      height: 10,
-                      overflow: "hidden",
-                      background: "var(--surface-light)",
-                      borderRadius: 999,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: `${width}%`,
-                        height: "100%",
-                        background:
-                          "linear-gradient(90deg, var(--yellow), #c084fc)",
-                        borderRadius: 999,
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <StatusChart data={analytics.statusChartData} />
       </Card>
     </main>
   );
