@@ -82,8 +82,10 @@ export default function NewApplicationForm({
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          {columns.map((c) => (
-            <option key={c}>{c}</option>
+          {columns.map((column) => (
+            <option key={column} value={column}>
+              {column}
+            </option>
           ))}
         </select>
 

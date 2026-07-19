@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Card from "../components/ui/Card";
 import StatusChart from "../components/charts/StatusChart";
+import WeeklyChart from "../components/charts/WeeklyChart";
 
 type Job = {
   id: string;
@@ -43,6 +44,15 @@ export default function AnalyticsPage() {
         }
 
         const data: Job[] = await response.json();
+
+        console.table(
+          data.map((job) => ({
+            id: job.id,
+            company: job.company,
+            status: job.status,
+          }))
+        ); 
+        
         setJobs(data);
       } catch (loadError) {
         console.error(loadError);
@@ -114,6 +124,36 @@ export default function AnalyticsPage() {
       count,
     }));
 
+    const weeklyChartData = Array.from({ length: 6 }, (_, index) => {
+      const weekStart = new Date(now);
+
+      weekStart.setDate(
+        weekStart.getDate() -
+          weekStart.getDay() +
+          1 -
+          (5 - index) * 7
+      );
+      weekStart.setHours(0, 0, 0, 0);
+
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 7);
+
+      const count = jobs.filter((job) => {
+        const dateValue = job.applicationDate ?? job.createdAt;
+        const applicationDate = new Date(dateValue);
+
+        return applicationDate >= weekStart && applicationDate < weekEnd;
+      }).length;
+
+      return {
+        label: weekStart.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        count,
+      };
+    });
+
     return {
       applicationsThisWeek,
       interviews,
@@ -122,6 +162,7 @@ export default function AnalyticsPage() {
       highPriority,
       responseRate,
       statusChartData,
+      weeklyChartData,
     };
   }, [jobs]);
 
@@ -336,29 +377,59 @@ export default function AnalyticsPage() {
           </div>
         </Card>
       </section>
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
+          gap: 16,
+        }}
+      >
+        <Card>
+          <h2
+            style={{
+              margin: "0 0 6px",
+              fontSize: 20,
+            }}
+          >
+            Applications by status
+          </h2>
 
-      <Card>
-        <h2
-          style={{
-            margin: "0 0 6px",
-            fontSize: 20,
-          }}
-        >
-          Applications by status
-        </h2>
+          <p
+            style={{
+              margin: "0 0 24px",
+              color: "var(--muted)",
+              fontSize: 14,
+            }}
+          >
+            See where your applications currently sit in the hiring pipeline.
+          </p>
 
-        <p
-          style={{
-            margin: "0 0 24px",
-            color: "var(--muted)",
-            fontSize: 14,
-          }}
-        >
-          See where your applications currently sit in the hiring pipeline.
-        </p>
+          <StatusChart data={analytics.statusChartData} />
+        </Card>
 
-        <StatusChart data={analytics.statusChartData} />
-      </Card>
+        <Card>
+          <h2
+            style={{
+              margin: "0 0 6px",
+              fontSize: 20,
+            }}
+          >
+            Applications over time
+          </h2>
+
+          <p
+            style={{
+              margin: "0 0 24px",
+              color: "var(--muted)",
+              fontSize: 14,
+            }}
+          >
+            Track your application activity across the last six weeks.
+          </p>
+
+          <WeeklyChart data={analytics.weeklyChartData} />
+        </Card>
+      </section>
     </main>
   );
 }

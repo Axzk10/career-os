@@ -14,20 +14,23 @@ export async function GET() {
 export async function POST(req: Request) {
   const data = await req.json();
 
-  const jobs = await prisma.job.findMany({
+  const lastJob = await prisma.job.findFirst({
+    orderBy: {
+      position: "desc",
+    },
     select: {
-      id: true,
-      company: true,
-      title: true,
-      status: true,
-      priority: true,
-      location: true,
-      salary: true,
-      url: true,
-      notes: true,
-      applicationDate: true,
+      position: true,
     },
   });
-  return NextResponse.json(job);
-}
 
+  const job = await prisma.job.create({
+    data: {
+      company: data.company,
+      title: data.title,
+      status: data.status ?? "Saved",
+      position: (lastJob?.position ?? -1) + 1,
+    },
+  });
+
+  return NextResponse.json(job, { status: 201 });
+}

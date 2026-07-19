@@ -1,6 +1,14 @@
 import { prisma } from "@/prisma";
 import { NextResponse } from "next/server";
 
+const validStatuses = [
+  "Saved",
+  "Applied",
+  "Interview",
+  "Offer",
+  "Rejected",
+];
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -13,6 +21,13 @@ export async function GET(
     },
   });
 
+  if (!job) {
+    return NextResponse.json(
+      { error: "Job not found." },
+      { status: 404 }
+    );
+  }
+
   return NextResponse.json(job);
 }
 
@@ -22,6 +37,32 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await request.json();
+
+  if (
+    body.status !== undefined &&
+    !validStatuses.includes(body.status)
+  ) {
+    return NextResponse.json(
+      { error: "Invalid job status." },
+      { status: 400 }
+    );
+  }
+
+  const existingJob = await prisma.job.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!existingJob) {
+    return NextResponse.json(
+      { error: "Job not found." },
+      { status: 404 }
+    );
+  }
 
   const updatedJob = await prisma.job.update({
     where: {
@@ -36,9 +77,12 @@ export async function PATCH(
       salary: body.salary,
       url: body.url,
       notes: body.notes,
-      followUpDate: body.followUpDate
-        ? new Date(body.followUpDate)
-        : null,
+
+      ...(body.followUpDate !== undefined && {
+        followUpDate: body.followUpDate
+          ? new Date(body.followUpDate)
+          : null,
+      }),
     },
   });
 
@@ -51,6 +95,22 @@ export async function DELETE(
 ) {
   const { id } = await params;
 
+  const existingJob = await prisma.job.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!existingJob) {
+    return NextResponse.json(
+      { error: "Job not found." },
+      { status: 404 }
+    );
+  }
+
   await prisma.job.delete({
     where: {
       id,
@@ -58,6 +118,6 @@ export async function DELETE(
   });
 
   return NextResponse.json({
-    message: "Job deleted successfully",
+    message: "Job deleted successfully.",
   });
 }
